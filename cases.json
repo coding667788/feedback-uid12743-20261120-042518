@@ -1,0 +1,42 @@
+{
+  "tenant": "demo",
+  "fresh": true,
+  "cases": [
+    {"id": "create-app", "op": "create_object", "object": "app"},
+    {"id": "create-db", "op": "create_object", "object": "db"},
+    {"id": "create-cache", "op": "create_object", "object": "cache"},
+
+    {"id": "baseline-db", "op": "set_baseline", "object": "db", "perms": ["read"]},
+    {"id": "lease-l1", "op": "add_lease", "lease_id": "L1", "object": "app", "perm": "read", "expires_at": 2000},
+    {"id": "lease-l2", "op": "add_lease", "lease_id": "L2", "object": "app", "perm": "write", "expires_at": 1000},
+    {"id": "attr-cache", "op": "set_attr_ref", "object": "cache", "attr": "via_app", "perm": "read", "ref_object": "app", "ref_perm": "read"},
+    {"id": "dep-app-db", "op": "add_dependency", "object": "app", "perm": "read", "req_object": "db", "req_perm": "read"},
+
+    {"id": "target-500", "op": "target", "at": 500},
+    {"id": "target-exact-expiry", "op": "target", "at": 1000},
+
+    {"id": "plan-1", "op": "plan", "at": 500, "request_id": "rq-plan-1"},
+    {"id": "apply-1", "op": "apply", "plan_id": "P000001", "now": 600, "request_id": "rq-apply-1"},
+    {"id": "current-1", "op": "current"},
+
+    {"id": "plan-2", "op": "plan", "at": 1500, "request_id": "rq-plan-2"},
+    {"id": "apply-2", "op": "apply", "plan_id": "P000002", "now": 1600, "request_id": "rq-apply-2"},
+
+    {"id": "rebuild-db", "op": "rebuild_object", "object": "db"},
+    {"id": "plan-3", "op": "plan", "at": 1700, "request_id": "rq-plan-3"},
+    {"id": "mutate-db", "op": "set_baseline", "object": "db", "perms": ["read"]},
+    {"id": "apply-3-stale", "op": "apply", "plan_id": "P000003", "now": 1750, "request_id": "rq-apply-3"},
+    {"id": "current-after-stale", "op": "current"},
+
+    {"id": "plan-4", "op": "plan", "at": 1800, "request_id": "rq-plan-4"},
+    {"id": "apply-4", "op": "apply", "plan_id": "P000004", "now": 1850, "request_id": "rq-apply-4"},
+    {"id": "current-final", "op": "current"},
+
+    {"id": "replay-apply-1", "op": "apply", "plan_id": "P000001", "now": 600, "request_id": "rq-apply-1"},
+    {"id": "conflict-plan", "op": "plan", "at": 999, "request_id": "rq-plan-1"},
+    {"id": "conflict-apply", "op": "apply", "plan_id": "P000004", "now": 9999, "request_id": "rq-apply-4"},
+
+    {"id": "receipts", "op": "receipts"},
+    {"id": "target-2000", "op": "target", "at": 2000}
+  ]
+}
